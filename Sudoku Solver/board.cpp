@@ -162,8 +162,7 @@ void Board::annotate_potential_entries() {
 
 			// std::cout << grid_vals.size() << std::endl;
 			for (int row = 0; row < SUB_BOARD_DIM; row++) {
-				for (int col = 0; col < SUB_BOARD_DIM; col++) {
-					int loc = (grid_x + row) * (grid_y + col);
+				for (int loc = grid_start + row * 9; loc < (grid_start + row * 9) + 3; loc++) {
 					if (board[loc][0] == false) {
 						for (auto it = grid_vals.begin(); it != grid_vals.end(); ++it) {
 							if (board[loc][*it] == false) {

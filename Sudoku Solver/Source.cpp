@@ -37,7 +37,7 @@ int main() {
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<milliseconds>(stop - start);
 	std::cout << duration.count() << "ms" << std::endl;
-	easy_sudoku.print_cell(0);
+	easy_sudoku.print_cell(33);
 	easy_sudoku.print_cell(1);
 	//easy_sudoku.annotate_potential_entries();
 	//easy_sudoku.print_board();
