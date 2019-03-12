@@ -38,6 +38,9 @@ void Board::set_board(int* filled) {
 		}
 
 		else {
+			for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
+				board[i][j] = true;
+			}
 			++empty_cells;
 		}
 	}
@@ -79,7 +82,7 @@ void Board::annotate_potential_entries() {
 			for (int i = row * SUB_BOARD_SIZE; i < (row * SUB_BOARD_SIZE) + SUB_BOARD_SIZE; i++) {
 				if (board[i][0] == false) {
 					for (auto it = row_vals.begin(); it != row_vals.end(); ++it) {
-						board[i][*it] = true;
+						board[i][*it] = false;
 					}
 
 					//// check for single potential value and set if true
@@ -115,14 +118,14 @@ void Board::annotate_potential_entries() {
 			}
 		}
 		// std::cout << col_vals.size() << std::endl;
-		// std::cout << "Got to 115" << std::endl;
+		// std::cout << "Got to 118" << std::endl;
 		// Fill cells with true where indeces correspond to values it cannot have 
 		if (!col_vals.empty()) {
 			for (int i = col; i < BOARD_SIZE - SUB_BOARD_SIZE + col; i += SUB_BOARD_SIZE) {
 				if (board[i][0] == false) {
 					for (auto it = col_vals.begin(); it != col_vals.end(); ++it) {
-						if (board[i][*it] == false) {
-							board[i][*it] = true;
+						if (board[i][*it] == true) {
+							board[i][*it] = false;
 						}
 					}
 
@@ -141,14 +144,14 @@ void Board::annotate_potential_entries() {
 			}
 		}
 	}
-	// std::cout << "Got to 141" << std::endl;
+	// std::cout << "Got to 144" << std::endl;
 	// Reduce potentials for sub grid intersections
 	for (int grid_x = 0; grid_x < SUB_BOARD_DIM; grid_x++) {
 		for (int grid_y = 0; grid_y < SUB_BOARD_DIM; grid_y++) {
 			std::set<int> grid_vals;
 			int grid_start = grid_x * 9 * 3 + grid_y * 3;
 			for (int row = 0; row < SUB_BOARD_DIM; row++) {
-				for (int loc = grid_start + row * 9; loc < (grid_start + row * 9) + 3; loc++) {
+				for (int loc = grid_start + row * SUB_BOARD_SIZE; loc < (grid_start + row * SUB_BOARD_SIZE) + SUB_BOARD_DIM; loc++) {
 					if (board[loc][0] == true) {
 						for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
 							if (board[loc][j] == true) {
@@ -162,11 +165,11 @@ void Board::annotate_potential_entries() {
 
 			// std::cout << grid_vals.size() << std::endl;
 			for (int row = 0; row < SUB_BOARD_DIM; row++) {
-				for (int loc = grid_start + row * 9; loc < (grid_start + row * 9) + 3; loc++) {
+				for (int loc = grid_start + row * SUB_BOARD_SIZE; loc < (grid_start + row * SUB_BOARD_SIZE) + SUB_BOARD_DIM; loc++) {
 					if (board[loc][0] == false) {
 						for (auto it = grid_vals.begin(); it != grid_vals.end(); ++it) {
-							if (board[loc][*it] == false) {
-								board[loc][*it] = true;
+							if (board[loc][*it] == true) {
+								board[loc][*it] = false;
 							}
 						}
 
@@ -189,7 +192,7 @@ void Board::annotate_potential_entries() {
 	// std::cout << empty_cells << std::endl;
 }
 
-// Helper method to get value in cell
+// Helper method to get value in a cell
 int Board::get_entry(int _loc) {
 	int ret_val = 0;
 	if (board[_loc][0] == true) {
@@ -203,6 +206,7 @@ int Board::get_entry(int _loc) {
 	return ret_val;
 }
 
+// Helper function to get a cells potential or filled value(s)
 int* Board::get_potentials(int _loc) {
 	int* to_pass = nullptr;
 	if (board[_loc][0] == false) {
@@ -221,7 +225,7 @@ int* Board::get_potentials(int _loc) {
 	return to_pass;
 }
 
-// Prints out the passed in sudoku game board
+// Prints out the sudoku game board
 // Assumes N is either 4, 9 or 16 but can be extended to add more sizes
 void Board::print_board() {
 
