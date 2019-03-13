@@ -39,6 +39,26 @@ int main() {
 										9, 6, 7, 5, 2, 8, 3, 4, 1, 
 										3, 5, 1, 4, 7, 9, 2, 8, 6 };
 
+	int* test_board_easy2 = new int[81]{ 0, 0, 0, 0, 9, 0, 0, 0, 0, 
+										 0, 3, 0, 0, 0, 0, 7, 4, 2, 
+										 6, 1, 0, 0, 3, 0, 0, 0, 0,
+										 0, 0, 8, 0, 0, 0, 0, 0, 0, 
+										 0, 2, 9, 1, 4, 7, 0, 0, 8,
+										 4, 5, 0, 0, 0, 0, 0, 7, 0,
+										 0, 4, 0, 0, 0, 0, 0, 6, 0,
+										 5, 0, 0, 6, 0, 0, 0, 3, 0,
+										 0, 0, 0, 0, 8, 1, 2, 0, 0 };
+
+	int* easy_test2_answer = new int[81]{ 2, 8, 4, 7, 9, 5, 3, 1, 6, 
+										  9, 3, 5, 8, 1, 6, 7, 4, 2,
+										  6, 1, 7, 2, 3, 4, 5, 8, 9,
+										  1, 7, 8, 5, 6, 9, 4, 2, 3,
+										  3, 2, 9, 1, 4, 7, 6, 5, 8, 
+										  4, 5, 6, 3, 2, 8, 9, 7, 1,
+										  8, 4, 2, 9, 5, 3, 1, 6, 7,
+										  5, 9, 1, 6, 7, 2, 8, 3, 4, 
+										  7, 6, 3, 4, 8, 1, 2, 9, 5 };
+
 	// https://www.puzzles.ca/sudoku_puzzles/sudoku_medium_487.html
 	int* test_board_medium = new int[81]{0, 0, 0, 0, 0, 0, 3, 0, 0,
 										 8, 5, 2, 3, 0, 0, 0, 0, 1,
@@ -61,20 +81,20 @@ int main() {
 											7, 2, 1, 6, 3, 5, 9, 4, 8 };
 
 	// Instantiate and set game board
-	Board easy_sudoku = Board();
-	easy_sudoku.set_board(test_board_easy);
-	easy_sudoku.print_board();
+	Board *easy_sudoku = new Board();
+	easy_sudoku->set_board(test_board_easy);
+	easy_sudoku->print_board();
 	int loop_count_easy = 0;
 
 	// Run solver on easy board
 	auto start_easy = high_resolution_clock::now();
 
-	while (easy_sudoku.is_complete() == false) {
-		easy_sudoku.annotate_potential_entries();
-		easy_sudoku.remove_doubles_and_triples_by_sub_grid();
-		easy_sudoku.find_unique_potentials();
+	while (easy_sudoku->is_complete() == false) {
+		easy_sudoku->annotate_potential_entries();
+		easy_sudoku->remove_doubles_and_triples_by_sub_grid();
+		//easy_sudoku->find_unique_potentials();
 		std::cout << "Loops: " << ++loop_count_easy << " | Empty Cells: ";
-		std::cout << easy_sudoku.empty_cells << std::endl;
+		std::cout << easy_sudoku->empty_cells << std::endl;
 		if (loop_count_easy > 15) {
 			break;
 		}
@@ -83,38 +103,74 @@ int main() {
 	auto stop_easy = high_resolution_clock::now();
 	auto duration_easy = duration_cast<milliseconds>(stop_easy - start_easy);
 	std::cout << duration_easy.count() << "ms" << std::endl;
-	std::cout << "Board is correct: " << easy_sudoku.compare_boards(test_board_easy, easy_test_answer) << std::endl;
-	easy_sudoku.print_board();
+	std::cout << "Board is correct: " << easy_sudoku->compare_boards(easy_sudoku->board_to_ints(), easy_test_answer) << std::endl;
+	easy_sudoku->print_board();
 
-	Board med_sudoku = Board();
-	med_sudoku.set_board(test_board_medium);
-	med_sudoku.print_board();
+	// Run solver on second easy board
+	Board *easy_sudoku2 = new Board();
+	easy_sudoku2->set_board(test_board_easy2);
+	easy_sudoku2->print_board();
+	int loop_count_easy2 = 0;
+
+	auto start_easy2 = high_resolution_clock::now();
+
+	while (easy_sudoku2->is_complete() == false) {
+		easy_sudoku2->annotate_potential_entries();
+		easy_sudoku2->remove_doubles_and_triples_by_sub_grid();
+		//easy_sudoku2->find_unique_potentials();
+		std::cout << "Loops: " << ++loop_count_easy2 << " | Empty Cells: ";
+		std::cout << easy_sudoku2->empty_cells << std::endl;
+		if (loop_count_easy2 > 15) {
+			break;
+		}
+	}
+
+	auto stop_easy2 = high_resolution_clock::now();
+	auto duration_easy2 = duration_cast<milliseconds>(stop_easy2 - start_easy2);
+	std::cout << duration_easy2.count() << "ms" << std::endl;
+	std::cout << "Board is correct: " << easy_sudoku2->compare_boards(easy_sudoku2->board_to_ints(), easy_test2_answer) << std::endl;
+	easy_sudoku2->print_board();
+
+	// Run solver on medium board
+	Board *med_sudoku = new Board();
+	med_sudoku->set_board(test_board_medium);
+	med_sudoku->print_board();
 	int loop_count_med = 0;
 
 	// run solver on mediam board
 	auto start_med = high_resolution_clock::now();
 
-	while (med_sudoku.is_complete() == false) {
-		med_sudoku.annotate_potential_entries();
-		med_sudoku.remove_doubles_and_triples_by_sub_grid();
-		med_sudoku.find_unique_potentials();
+	while (med_sudoku->is_complete() == false) {
+		med_sudoku->annotate_potential_entries();
+		med_sudoku->remove_doubles_and_triples_by_sub_grid();
+		med_sudoku->find_unique_potentials();
 		std::cout << "Loops: " << ++loop_count_med << " | Empty Cells: ";
-		std::cout << med_sudoku.empty_cells << std::endl;
+		std::cout << med_sudoku->empty_cells << std::endl;
 		if (loop_count_med > 10) {
 			break;
 		}
 	}
 
+	/*med_sudoku->find_unique_potentials();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->remove_doubles_and_triples_by_sub_grid();
+	std::cout << med_sudoku->empty_cells << std::endl;*/
+
 	auto stop_med = high_resolution_clock::now();
 	auto duration_med = duration_cast<milliseconds>(stop_med - start_med);
 	std::cout << duration_med.count() << "ms" << std::endl;
-	std::cout << "Board is correct: " << med_sudoku.compare_boards(test_board_medium, medium_test_answer) << std::endl;
-	med_sudoku.print_board();
-	med_sudoku.print_cell(0);
-	med_sudoku.print_cell(2);
-	med_sudoku.print_cell(18);
-	med_sudoku.print_cell(20);
+	std::cout << "Board is correct: " << med_sudoku->compare_boards(test_board_medium, medium_test_answer) << std::endl;
+	med_sudoku->print_board();
+	med_sudoku->print_cell(0);
+	med_sudoku->print_cell(2);
+	med_sudoku->print_cell(18);
+	med_sudoku->print_cell(20);
 
+	delete easy_sudoku;
+	delete easy_sudoku2;
+	delete med_sudoku;
+	delete test_board_easy2;
+	delete easy_test2_answer;
 	delete test_board_medium;
 	delete medium_test_answer;
 	delete test_board_easy;
