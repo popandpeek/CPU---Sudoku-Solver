@@ -72,8 +72,12 @@ int main() {
 	while (easy_sudoku.is_complete() == false) {
 		easy_sudoku.annotate_potential_entries();
 		easy_sudoku.remove_doubles_and_triples_by_sub_grid();
+		easy_sudoku.find_unique_potentials();
 		std::cout << "Loops: " << ++loop_count_easy << " | Empty Cells: ";
 		std::cout << easy_sudoku.empty_cells << std::endl;
+		if (loop_count_easy > 15) {
+			break;
+		}
 	}
 
 	auto stop_easy = high_resolution_clock::now();
@@ -93,6 +97,7 @@ int main() {
 	while (med_sudoku.is_complete() == false) {
 		med_sudoku.annotate_potential_entries();
 		med_sudoku.remove_doubles_and_triples_by_sub_grid();
+		med_sudoku.find_unique_potentials();
 		std::cout << "Loops: " << ++loop_count_med << " | Empty Cells: ";
 		std::cout << med_sudoku.empty_cells << std::endl;
 		if (loop_count_med > 10) {
@@ -105,6 +110,10 @@ int main() {
 	std::cout << duration_med.count() << "ms" << std::endl;
 	std::cout << "Board is correct: " << med_sudoku.compare_boards(test_board_medium, medium_test_answer) << std::endl;
 	med_sudoku.print_board();
+	med_sudoku.print_cell(0);
+	med_sudoku.print_cell(2);
+	med_sudoku.print_cell(18);
+	med_sudoku.print_cell(20);
 
 	delete test_board_medium;
 	delete medium_test_answer;

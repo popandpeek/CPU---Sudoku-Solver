@@ -7,6 +7,9 @@
 ** Assumptions: Assumes valid board size and 1D memory allocation
 */
 
+#include <algorithm>
+#include <vector>
+#include <iterator>
 #include <stdio.h>
 #include <iostream>
 #include <set>
@@ -23,7 +26,7 @@ public:
 
 	// Array of bool pointers to hold cells for board
 	// 0 item in each array signifies filled or empty, 1-9 signifies filled value or potential value
-	bool **board = (bool **)malloc(BOARD_SIZE * sizeof(bool *));
+	bool **board = new bool*[BOARD_SIZE];
 	int empty_cells = 0;
 
 	// Used in the print function
@@ -45,6 +48,9 @@ public:
 
 	// sets a cell
 	void set_cell(int, int, int);
+
+	// sets a cell using 1d coordinates
+	void set_cell(int _loc, int _val);
 
 	// method for finding potential values for empty cells
 	void annotate_potential_entries();
@@ -73,6 +79,13 @@ public:
 	// combs through sub-grids and removes potential values from them if a double or triple is found
 	// sub-grid dims: s-g(0, 0) : top left, s-g(2,2) : bottom right for 9x9 sudoku
 	void remove_doubles_and_triples_by_sub_grid();
+
+	// performs unique potential on the entire board
+	void find_unique_potentials();
+
+	// Takes a cell location and then compares it with the potentials of its rows/cols/sub-grids
+	// If it contains a unique potential, the cell gets filled
+	void find_unique_cell_potential(int);
 
 	// Prints out the passed in sudoku game board
 	// Assumes N is either 4, 9 or 16 but can be extended to add more sizes

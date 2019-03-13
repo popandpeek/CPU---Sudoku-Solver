@@ -11,7 +11,7 @@
 
 Board::Board() {
 	for (int i = 0; i < BOARD_SIZE; i++) {
-		board[i] = (bool*)malloc((SUB_BOARD_SIZE + 1) * sizeof(bool));
+		board[i] = new bool[SUB_BOARD_SIZE + 1];
 		for (int j = 0; j < SUB_BOARD_SIZE + 1; j++) {
 			board[i][j] = false;
 		}
@@ -58,7 +58,17 @@ void Board::set_cell(int _row, int _col, int _val) {
 	}
 }
 
-// method for finding potential values for empty cells
+// sets a cell using 1d coordinates
+void Board::set_cell(int _loc, int _val) {
+	board[_loc][0] = true;
+	for (int i = 1; i < SUB_BOARD_SIZE + 1; i++) {
+		if (board[_loc][i] == true && i != _val) {
+			board[_loc][0] = false;
+		}
+	}
+}
+
+// method for reducing potential values for empty cells
 void Board::annotate_potential_entries() {
 	// std::cout << empty_cells << std::endl;
 	for (int row = 0; row < SUB_BOARD_SIZE; row++) {
@@ -399,6 +409,128 @@ void Board::remove_doubles_and_triples_by_sub_grid() {
 				// TODO: Any other sudoku dimensions.
 				//  e.g. 16x16 sudoku which will need to check for quadruples as well.
 			}
+		}
+	}
+}
+
+// performs unique potential on the entire board
+void Board::find_unique_potentials() {
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		find_unique_cell_potential(i);
+	}
+}
+
+void Board::find_unique_cell_potential(int _loc) {
+
+	// do nothing if the board cell is already filled
+	if (board[_loc][0] == true)
+		return;
+
+	std::set<int> pooled_potentials;
+	std::set<int> selected_potentials = get_potential_set(_loc);
+
+	// Do rows first
+	int row = _loc / SUB_BOARD_SIZE;
+	// pool all row cell potentials besides the selected cell
+	/*for (int i = 0; i < SUB_BOARD_SIZE; i++) {
+		int row_ind = row * SUB_BOARD_SIZE + i;
+		if (row_ind != _loc) {
+			std::set<int> cell_set = get_potential_set(row_ind);
+			pooled_potentials.insert(cell_set.begin(), cell_set.end());
+		}
+	}*/
+
+	// If not, perform set difference of first set w.r.t. pooled set
+	//if (pooled_potentials.size() > 0) {
+	//	std::set<int> diff;
+	//	std::set_difference(selected_potentials.begin(),
+	//		selected_potentials.end(),
+	//		pooled_potentials.begin(),
+	//		pooled_potentials.end(),
+	//		std::inserter(diff, diff.begin()));
+
+	//	// only matters if we found a unique potential
+	//	if (diff.size() == 1) {
+	//		auto it = diff.begin();
+	//		set_cell(_loc, *it);
+
+	//		// cell is set now so we're done
+	//		return;
+	//	}
+	//}
+
+	// Do cols next
+	//pooled_potentials.clear();
+	int col = _loc % SUB_BOARD_SIZE;
+	// pool all col cell potentials besides the selected cell
+	//for (int i = 0; i < SUB_BOARD_SIZE; i++) {
+	//	int col_ind = col + (SUB_BOARD_SIZE * i);
+	//	if (col_ind != _loc) {
+	//		std::set<int> cell_set = get_potential_set(col_ind);
+	//		pooled_potentials.insert(cell_set.begin(), cell_set.end());
+	//	}
+	//}
+
+	//// If not, perform set difference of first set w.r.t. pooled set
+	//if (pooled_potentials.size() > 0) {
+	//	std::set<int> diff;
+	//	std::set_difference(selected_potentials.begin(),
+	//		selected_potentials.end(),
+	//		pooled_potentials.begin(),
+	//		pooled_potentials.end(),
+	//		std::inserter(diff, diff.begin()));
+
+	//	// only matters if we found a unique potential
+	//	if (diff.size() == 1) {
+	//		auto it = diff.begin();
+	//		set_cell(_loc, *it);
+
+	//		// cell is set now so we're done
+	//		return;
+	//	}
+	//}
+
+	// Finally, do sub grids 
+	pooled_potentials.clear();
+	int sub_grid_x = row / SUB_BOARD_DIM; // 0, 1, or 2
+	int sub_grid_y = col / SUB_BOARD_DIM; // 0, 1, or 2
+	int grid_start = (sub_grid_x * SUB_BOARD_SIZE * SUB_BOARD_DIM) + (sub_grid_y * SUB_BOARD_DIM);
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			//		  start ind     rows of grid         col
+			int ind = grid_start + (i * SUB_BOARD_SIZE) + j;
+			if (ind != _loc) {
+				std::set<int> cell_set = get_potential_set(ind);
+				pooled_potentials.insert(cell_set.begin(), cell_set.end());
+			}
+		}
+	}
+
+	// If not, perform set difference of first set w.r.t. pooled set
+	if (pooled_potentials.size() > 0) {
+		std::set<int> diff;
+		std::set_difference(selected_potentials.begin(),
+			selected_potentials.end(),
+			pooled_potentials.begin(),
+			pooled_potentials.end(),
+			std::inserter(diff, diff.begin()));
+
+		// only matters if we found a unique potential
+		if (diff.size() == 1) {
+			auto it = diff.begin();
+			//set_cell(_loc, *it);
+			board[_loc][0] = true;
+			for (int i = 0; i < SUB_BOARD_SIZE + 1; i++) {
+				if (i != *it) {
+					board[_loc][i] = false;
+				}
+				else {
+					board[_loc][i] = true;
+				}
+			}
+
+			// cell is set now so we're done
+			return;
 		}
 	}
 }
