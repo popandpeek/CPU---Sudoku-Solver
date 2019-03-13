@@ -69,7 +69,7 @@ void Board::annotate_potential_entries() {
 		// remove values from set that correspond to filled cells in the row
 		for (int i = row * SUB_BOARD_SIZE; i < SUB_BOARD_SIZE + (row * SUB_BOARD_SIZE); i++) {
 			if (board[i][0] == true) {
-				for (int j = 1; j < SUB_BOARD_SIZE; j++) {
+				for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
 					if (board[i][j] == true) {
 						row_vals.insert(j);
 					}
@@ -106,8 +106,8 @@ void Board::annotate_potential_entries() {
 	// scan col for filled in values and store in temp set
 	for (int col = 0; col < SUB_BOARD_SIZE; col++) {
 		std::set<int> col_vals;
-		
-		for (int i = col; i < BOARD_SIZE - SUB_BOARD_SIZE + col + 1; i += SUB_BOARD_SIZE) {
+
+		for (int i = col; i < BOARD_SIZE; i += SUB_BOARD_SIZE) {
 			// std::cout << "Got to 106" << std::endl;
 			if (board[i][0] == true) {
 				for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
@@ -122,7 +122,7 @@ void Board::annotate_potential_entries() {
 		// std::cout << "Got to 118" << std::endl;
 		// Fill cells with true where indeces correspond to values it cannot have 
 		if (!col_vals.empty()) {
-			for (int i = col; i < BOARD_SIZE - SUB_BOARD_SIZE + col; i += SUB_BOARD_SIZE) {
+			for (int i = col; i < BOARD_SIZE; i += SUB_BOARD_SIZE) {
 				if (board[i][0] == false) {
 					for (auto it = col_vals.begin(); it != col_vals.end(); ++it) {
 						if (board[i][*it] == true) {
@@ -450,6 +450,45 @@ void Board::print_board() {
 	std::cout << std::endl;
 }
 
+// Function to return integer array of board state
+int* Board::board_to_ints() {
+	if (board_to_int != nullptr) {
+		delete board_to_int;
+	}
+		
+	board_to_int = new int[BOARD_SIZE];
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		if (board[i][0] == true) {
+			for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
+				if (board[i][j] == true) {
+				board_to_int[i] = j;
+				}
+			}
+		}
+
+		else {
+			board_to_int[i] = 0;
+		}
+	}
+
+	return board_to_int;
+}
+
+// Function to compare two integer arrays
+bool Board::compare_boards(int* _one, int* _two) {
+	if (_one == nullptr || _two == nullptr) {
+		return false;
+	}
+
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		if (_one[i] != _two[i]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void Board::print_cell(int _loc) {
 	std::cout << "Cell : " << _loc << std::endl;
 	for (int i = 0; i < SUB_BOARD_SIZE + 1; i++) {
@@ -459,4 +498,15 @@ void Board::print_cell(int _loc) {
 		}
 	}
 	std::cout << std::endl;
+}
+
+int Board::get_empty_cell_count() {
+	return empty_cells;
+}
+
+bool Board::is_complete() {
+	if (this->get_empty_cell_count() == 0)
+		return true;
+	else
+		return false;
 }

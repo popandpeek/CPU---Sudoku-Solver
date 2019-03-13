@@ -32,6 +32,9 @@ public:
 	// Used to get potential bool array
 	int* to_pass = nullptr;
 
+	// Used to get integer array of board values
+	int* board_to_int = nullptr;
+
 	Board();
 
 	~Board();
@@ -75,6 +78,16 @@ public:
 	// Assumes N is either 4, 9 or 16 but can be extended to add more sizes
 	void print_board();
 
+	// Function to return integer array of cell values
+	int* board_to_ints();
+
+	// Function to compare integer arrays of values
+	bool compare_boards(int*, int*);
+
+	// Prints a bool array that corresponds to one cell
 	void print_cell(int);
 
+	int get_empty_cell_count();
+
+	bool is_complete();
 };
