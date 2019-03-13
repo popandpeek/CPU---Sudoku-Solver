@@ -29,6 +29,9 @@ public:
 	// Used in the print function
 	char* border;
 
+	// Used to get potential bool array
+	int* to_pass = nullptr;
+
 	Board();
 
 	~Board();
@@ -46,10 +49,30 @@ public:
 	// Helper method to get value in cell
 	int get_entry(int);
 
+	// Helper function to get a cells potential or filled value(s)
 	int* get_potentials(int);
 
+	// Helper method to get potential values in an unfilled cell
+	std::set<int> get_potential_set(int);
+
+	// Helper method to remove specified potential values from a cell
+	void remove_potential_values(std::set<int>, int);
+
+	// Helper to remove potential values from a row of a sub-grid
+	// assumes row_start is the leftmost cell of the row
+	void remove_potential_values_from_row(std::set<int>, int);
+
+
+	// Helper to remove potential values from a col of a sub-grid
+	// assumes col_start is the topmost cell of the col
+	void remove_potential_values_from_col(std::set<int>, int);
+
+	// combs through sub-grids and removes potential values from them if a double or triple is found
+	// sub-grid dims: s-g(0, 0) : top left, s-g(2,2) : bottom right for 9x9 sudoku
+	void remove_doubles_and_triples_by_sub_grid();
+
 	// Prints out the passed in sudoku game board
-// Assumes N is either 4, 9 or 16 but can be extended to add more sizes
+	// Assumes N is either 4, 9 or 16 but can be extended to add more sizes
 	void print_board();
 
 	void print_cell(int);

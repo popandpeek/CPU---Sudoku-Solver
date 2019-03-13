@@ -24,12 +24,13 @@ Board::~Board() {
 		free(board[i]);
 	}
 
-	free(board);
+	delete to_pass;
 	delete border;
+	free(board);
 }
 
-// Method to set the board according to passed integer array
-// assumes the filled integer array is of size BOARD_SIZE contains only values between 1 and 9
+// Functions to set the board according to passed integer array
+// Marks an empty cells potential values as all true
 void Board::set_board(int* filled) {
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		if (filled[i] != 0) {
@@ -85,17 +86,17 @@ void Board::annotate_potential_entries() {
 						board[i][*it] = false;
 					}
 
-					//// check for single potential value and set if true
-					//int count = 0;
-					//for (int j = 1; j < SUB_BOARD_SIZE; j++) {
-					//	if (board[i][j] == true) {
-					//		++count;
-					//	}
-					//}
-					//if (count == 1) {
-					//	board[i][0] = true;
-					//	--empty_cells;
-					//}
+					// check for single potential value and set if true
+					int count = 0;
+					for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
+						if (board[i][j] == true) {
+							++count;
+						}
+					}
+					if (count == 1) {
+						board[i][0] = true;
+						--empty_cells;
+					}
 				}
 			}
 		}
@@ -129,17 +130,17 @@ void Board::annotate_potential_entries() {
 						}
 					}
 
-					//// check for single potential value and set if true
-					//int count = 0;
-					//for (int j = 1; j < SUB_BOARD_SIZE; j++) {
-					//	if (board[i][j] == true) {
-					//		++count;
-					//	}
-					//}
-					//if (count == 1) {
-					//	board[i][0] = true;
-					//	--empty_cells;
-					//}
+					// check for single potential value and set if true
+					int count = 0;
+					for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
+						if (board[i][j] == true) {
+							++count;
+						}
+					}
+					if (count == 1) {
+						board[i][0] = true;
+						--empty_cells;
+					}
 				}
 			}
 		}
@@ -173,17 +174,17 @@ void Board::annotate_potential_entries() {
 							}
 						}
 
-						//// check for single potential value and set if true
-						//int count = 0;
-						//for (int i = 1; i < SUB_BOARD_SIZE; i++) {
-						//	if (board[loc][i] == true) {
-						//		++count;
-						//	}
-						//}
-						//if (count == 1) {
-						//	board[loc][0] = true;
-						//	--empty_cells;
-						//}
+						// check for single potential value and set if true
+						int count = 0;
+						for (int i = 1; i < SUB_BOARD_SIZE + 1; i++) {
+							if (board[loc][i] == true) {
+								++count;
+							}
+						}
+						if (count == 1) {
+							board[loc][0] = true;
+							--empty_cells;
+						}
 					}
 				}
 			}
@@ -208,7 +209,6 @@ int Board::get_entry(int _loc) {
 
 // Helper function to get a cells potential or filled value(s)
 int* Board::get_potentials(int _loc) {
-	int* to_pass = nullptr;
 	if (board[_loc][0] == false) {
 		to_pass = new int[SUB_BOARD_SIZE];
 		for (int i = 0; i < SUB_BOARD_SIZE; i++) {
@@ -223,6 +223,184 @@ int* Board::get_potentials(int _loc) {
 	}
 
 	return to_pass;
+}
+
+// Helper method to get potential values in an unfilled cell
+std::set<int> Board::get_potential_set(int _loc) {
+	std::set<int> vals;
+	if (board[_loc][0] == false) {
+		for (int i = 1; i < SUB_BOARD_SIZE + 1; i++) {
+			if (board[_loc][i] == true) {
+				vals.insert(i);
+			}
+		}
+	}
+	return vals;
+}
+
+// Helper method to remove specified potential values from a cell
+void Board::remove_potential_values(std::set<int> _vals, int _loc) {
+	if (board[_loc][0] == false) {
+		for (auto it = _vals.begin(); it != _vals.end(); ++it) {
+			board[_loc][*it] = false;
+		}
+	}
+}
+
+// Helper to remove potential values from a row of a sub-grid
+// assumes row_start is the leftmost cell of the row
+void Board::remove_potential_values_from_row(std::set<int> _vals, int row_start) {
+	remove_potential_values(_vals, row_start);
+	remove_potential_values(_vals, row_start + 1);
+	remove_potential_values(_vals, row_start + 2);
+}
+
+
+// Helper to remove potential values from a col of a sub-grid
+// assumes col_start is the topmost cell of the col
+void Board::remove_potential_values_from_col(std::set<int> _vals, int col_start) {
+	remove_potential_values(_vals, col_start);
+	remove_potential_values(_vals, col_start + SUB_BOARD_SIZE);
+	remove_potential_values(_vals, col_start + SUB_BOARD_SIZE * 2);
+}
+
+// combs through sub-grids and removes potential values from them if a double or triple is found
+// sub-grid dims: s-g(0, 0) : top left, s-g(2,2) : bottom right for 9x9 sudoku
+void Board::remove_doubles_and_triples_by_sub_grid() {
+
+	// Iterate by sub grid 
+	for (int sub_grid_row = 0; sub_grid_row < SUB_BOARD_DIM; sub_grid_row++) {
+		for (int sub_grid_col = 0; sub_grid_col < SUB_BOARD_DIM; sub_grid_col++) {
+
+			// Iterate through sub-grid rows first
+			int grid_start = (SUB_BOARD_DIM * SUB_BOARD_SIZE * sub_grid_row) + (SUB_BOARD_DIM * sub_grid_col);
+
+			// For 9x9 sudoku
+			if (SUB_BOARD_DIM == 3) {
+
+				// For each row, we get the 3 potential sets for the cells
+				for (int row = 0; row < SUB_BOARD_DIM; row++) {
+					std::set<int>cell_1 = get_potential_set(row * SUB_BOARD_SIZE + grid_start);
+					std::set<int>cell_2 = get_potential_set(row * SUB_BOARD_SIZE + grid_start + 1);
+					std::set<int>cell_3 = get_potential_set(row * SUB_BOARD_SIZE + grid_start + 2);
+
+					// check for triples
+					// *****NEED TO CHECK FOR INCLUDE NOT EXACT MATCH*****
+					if (cell_1.size() == 3 && cell_2.size() == 3 && cell_3.size() == 3) {
+						if (cell_1 == cell_2 && cell_1 == cell_3) { // found a row triple
+
+							// remove triple from all grid cells besides these 3
+							for (int row_remove = 0; row_remove < SUB_BOARD_DIM; row_remove++) {
+								if (row_remove != row) {
+									remove_potential_values_from_row(cell_1, SUB_BOARD_SIZE * row_remove + grid_start);
+								}
+							}
+
+							continue; // If triple was found, we don't want to waste time checking for a double
+						}
+					}
+
+					// check for doubles - things gonna get a bit messy
+					// start with cell 1
+					if (cell_1.size() == 2) {
+						if (cell_1 == cell_2) { // double found
+							// remove cell_3 vals and then the potential vals from other 2 rows
+							remove_potential_values(cell_2, row * SUB_BOARD_SIZE + grid_start + 2);
+							for (int row_remove = 0; row_remove < SUB_BOARD_DIM; row_remove++) {
+								if (row_remove != row) {
+									remove_potential_values_from_row(cell_2, SUB_BOARD_SIZE * row_remove + grid_start);
+								}
+							}
+						}
+						else if (cell_1 == cell_3) { // double found
+							// remove cell_2 vals and then the potential vals from other 2 rows
+							remove_potential_values(cell_2, row * SUB_BOARD_SIZE + grid_start + 1);
+							for (int row_remove = 0; row_remove < SUB_BOARD_DIM; row_remove++) {
+								if (row_remove != row) {
+									remove_potential_values_from_row(cell_2, SUB_BOARD_SIZE * row_remove + grid_start);
+								}
+							}
+						}
+					} // cell 1 out of the running
+					else if (cell_2.size() == 2 && cell_3.size() == 2) {
+						if (cell_2 == cell_3) { // double found
+							// remove cell_1 vals and then the potential vals from other 2 rows
+							remove_potential_values(cell_2, row * SUB_BOARD_SIZE + grid_start);
+							for (int row_remove = 0; row_remove < SUB_BOARD_DIM; row_remove++) {
+								if (row_remove != row) {
+									remove_potential_values_from_row(cell_2, SUB_BOARD_SIZE * row_remove + grid_start);
+								}
+							}
+						}
+					}
+
+					// no doubles or triples found on this row
+				}
+
+				// Now we do columns
+				for (int col = 0; col < SUB_BOARD_DIM; col++) {
+					std::set<int>cell_1 = get_potential_set(col + grid_start);
+					std::set<int>cell_2 = get_potential_set(col + grid_start + SUB_BOARD_SIZE);
+					std::set<int>cell_3 = get_potential_set(col + grid_start + SUB_BOARD_SIZE * 2);
+
+					// check for triples
+					if (cell_1.size() == 3 && cell_2.size() == 3 && cell_3.size() == 3) {
+						if (cell_1 == cell_2 && cell_1 == cell_3) { // found a row triple
+
+							// remove triple from all grid cells besides these 3
+							for (int col_remove = 0; col_remove < SUB_BOARD_DIM; col_remove++) {
+								if (col_remove != col) {
+									remove_potential_values_from_col(cell_1, col_remove + grid_start);
+								}
+							}
+
+							continue; // If triple was found, we don't want to waste time checking for a double
+						}
+					}
+
+					// check for doubles - things gonna get a bit messy
+					// start with cell 1
+					if (cell_1.size() == 2) {
+						if (cell_1 == cell_2) { // double found
+							// remove cell_3 vals and then the potential vals from other 2 cols
+							remove_potential_values(cell_2, col + grid_start + SUB_BOARD_SIZE * 2);
+							for (int col_remove = 0; col_remove < SUB_BOARD_DIM; col_remove++) {
+								if (col_remove != col) {
+									remove_potential_values_from_col(cell_2, col_remove + grid_start);
+								}
+							}
+						}
+						else if (cell_1 == cell_3) { // double found
+							// remove cell_2 vals and then the potential vals from other 2 rows
+							remove_potential_values(cell_2, col + grid_start + SUB_BOARD_SIZE);
+							for (int col_remove = 0; col_remove < SUB_BOARD_DIM; col_remove++) {
+								if (col_remove != col) {
+									remove_potential_values_from_col(cell_2, col_remove + grid_start);
+								}
+							}
+						}
+					} // cell 1 out of the running
+					else if (cell_2.size() == 2 && cell_3.size() == 2) {
+						if (cell_2 == cell_3) { // double found
+							// remove cell_1 vals and then the potential vals from other 2 rows
+							remove_potential_values(cell_2, col + grid_start);
+							for (int col_remove = 0; col_remove < SUB_BOARD_DIM; col_remove++) {
+								if (col_remove != col) {
+									remove_potential_values_from_col(cell_2, col_remove + grid_start);
+								}
+							}
+						}
+					}
+
+					// no doubles or triples found on this col
+				}
+			}
+			else {
+				// TODO: Any other sudoku dimensions.
+				//  e.g. 16x16 sudoku which will need to check for quadruples as well.
+			}
+		}
+	}
 }
 
 // Prints out the sudoku game board
@@ -273,7 +451,12 @@ void Board::print_board() {
 }
 
 void Board::print_cell(int _loc) {
+	std::cout << "Cell : " << _loc << std::endl;
 	for (int i = 0; i < SUB_BOARD_SIZE + 1; i++) {
-		std::cout << i << " : " << board[_loc][i] << std::endl;
+		std::cout << i << " : " << board[_loc][i];
+		if (i < SUB_BOARD_SIZE) {
+			std::cout << " | ";
+		}
 	}
+	std::cout << std::endl;
 }
