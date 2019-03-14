@@ -736,7 +736,7 @@ void print_boarder(int *board) {
 	std::cout << std::endl;
 }
 
-void Board::is_legal() {
+bool Board::is_legal() {
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		int* int_board = board_to_ints();
 		int row = i / SUB_BOARD_SIZE;
@@ -747,8 +747,8 @@ void Board::is_legal() {
 			print_cell(i);
 			throw;
 		}
-
 	}
+	return true;
 }
 
 

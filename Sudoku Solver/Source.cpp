@@ -39,36 +39,36 @@ int main() {
 										9, 6, 7, 5, 2, 8, 3, 4, 1, 
 										3, 5, 1, 4, 7, 9, 2, 8, 6 };
 
-	int* test_board_easy2 = new int[81]{ 0, 0, 0, 0, 9, 0, 0, 0, 0, 
-										 0, 3, 0, 0, 0, 0, 7, 4, 2, 
-										 6, 1, 0, 0, 3, 0, 0, 0, 0,
-										 0, 0, 8, 0, 0, 0, 0, 0, 0, 
-										 0, 2, 9, 1, 4, 7, 0, 0, 8,
-										 4, 5, 0, 0, 0, 0, 0, 7, 0,
-										 0, 4, 0, 0, 0, 0, 0, 6, 0,
-										 5, 0, 0, 6, 0, 0, 0, 3, 0,
-										 0, 0, 0, 0, 8, 1, 2, 0, 0 };
+	int* test_board_easy2 = new int[81] { 0, 0, 0, 0, 9, 0, 0, 0, 0, 
+										  0, 3, 0, 0, 0, 0, 7, 4, 2, 
+										  6, 1, 0, 0, 3, 0, 0, 0, 0,
+									  	  0, 0, 8, 0, 0, 0, 0, 0, 0, 
+									 	  0, 2, 9, 1, 4, 7, 0, 0, 8,
+										  4, 5, 0, 0, 0, 0, 0, 7, 0,
+										  0, 4, 0, 0, 0, 0, 0, 6, 0,
+										  5, 0, 0, 6, 0, 0, 0, 3, 0,
+										  0, 0, 0, 0, 8, 1, 2, 0, 0 };
 
-	int* easy_test2_answer = new int[81]{ 2, 8, 4, 7, 9, 5, 3, 1, 6, 
-										  9, 3, 5, 8, 1, 6, 7, 4, 2,
-										  6, 1, 7, 2, 3, 4, 5, 8, 9,
-										  1, 7, 8, 5, 6, 9, 4, 2, 3,
-										  3, 2, 9, 1, 4, 7, 6, 5, 8, 
-										  4, 5, 6, 3, 2, 8, 9, 7, 1,
-										  8, 4, 2, 9, 5, 3, 1, 6, 7,
-										  5, 9, 1, 6, 7, 2, 8, 3, 4, 
-										  7, 6, 3, 4, 8, 1, 2, 9, 5 };
+	int* easy_test2_answer = new int[81] { 2, 8, 4, 7, 9, 5, 3, 1, 6, 
+										   9, 3, 5, 8, 1, 6, 7, 4, 2,
+										   6, 1, 7, 2, 3, 4, 5, 8, 9,
+										   1, 7, 8, 5, 6, 9, 4, 2, 3,
+										   3, 2, 9, 1, 4, 7, 6, 5, 8, 
+										   4, 5, 6, 3, 2, 8, 9, 7, 1,
+										   8, 4, 2, 9, 5, 3, 1, 6, 7,
+										   5, 9, 1, 6, 7, 2, 8, 3, 4, 
+										   7, 6, 3, 4, 8, 1, 2, 9, 5 };
 
 	// https://www.puzzles.ca/sudoku_puzzles/sudoku_medium_487.html
-	int* test_board_medium = new int[81]{0, 0, 0, 0, 0, 0, 3, 0, 0,
-										 8, 5, 2, 3, 0, 0, 0, 0, 1,
-										 0, 9, 0, 2, 0, 0, 0, 0, 4,
-										 9, 7, 4, 0, 0, 0, 0, 0, 0,
-										 0, 1, 0, 0, 6, 0, 0, 0, 0, 
-										 0, 0, 0, 0, 4, 0, 0, 0, 0,
-										 6, 0, 9, 0, 8, 0, 0, 3, 7,
-										 3, 0, 0, 0, 0, 0, 0, 6, 0,
-										 0, 2, 0, 0, 0, 5, 0, 0, 0 };
+	int* test_board_medium = new int[81] { 0, 0, 0, 0, 0, 0, 3, 0, 0,
+										   8, 5, 2, 3, 0, 0, 0, 0, 1,
+										   0, 9, 0, 2, 0, 0, 0, 0, 4,
+										   9, 7, 4, 0, 0, 0, 0, 0, 0,
+										   0, 1, 0, 0, 6, 0, 0, 0, 0, 
+										   0, 0, 0, 0, 4, 0, 0, 0, 0,
+										   6, 0, 9, 0, 8, 0, 0, 3, 7,
+										   3, 0, 0, 0, 0, 0, 0, 6, 0,
+										   0, 2, 0, 0, 0, 5, 0, 0, 0 };
 
 	int* medium_test_answer = new int[81]{  4, 6, 7, 9, 1, 8, 3, 2, 5,
 											8, 5, 2, 3, 7, 4, 6 ,9, 1, 
@@ -79,6 +79,30 @@ int main() {
 											6, 4, 9, 1, 8, 2, 5, 3, 7, 
 											3, 8, 5, 4, 9, 7, 1, 6, 2, 
 											7, 2, 1, 6, 3, 5, 9, 4, 8 };
+
+
+	// https://www.puzzles.ca/sudoku_puzzles/sudoku_medium_487.html
+	int* test_board_hard = new int[81]{  0, 7, 0, 5, 0, 6, 0, 0, 0,
+										 4, 0, 3, 0, 0, 0, 0, 0, 1,
+										 0, 6, 0, 0, 0, 0, 9, 0, 7,
+										 0, 0, 0, 7, 3, 0, 8, 2, 0,
+										 8, 0, 4, 0, 5, 0, 0, 7, 3,
+										 0, 9, 0, 0, 2, 0, 0, 0, 5,
+										 0, 0, 1, 0, 0, 0, 0, 0, 0,
+										 0, 0, 0, 1, 0, 0, 2, 0, 6,
+										 0, 0, 0, 3, 8, 2, 0, 0, 0 };
+
+	//int* hard_test_answer = new int[81]{    4, 6, 7, 9, 1, 8, 3, 2, 5,
+	//										8, 5, 2, 3, 7, 4, 6 ,9, 1,
+	//										1, 9, 3, 2, 5, 6, 7, 8, 4,
+	//										9, 7, 4, 5, 2, 3, 8, 1, 6,
+	//										2, 1, 8, 7, 6, 9, 4, 5, 3,
+	//										5, 3, 6, 8, 4, 1, 2, 7, 9,
+	//										6, 4, 9, 1, 8, 2, 5, 3, 7,
+	//										3, 8, 5, 4, 9, 7, 1, 6, 2,
+	//										7, 2, 1, 6, 3, 5, 9, 4, 8 };
+
+
 
 	// Instantiate and set game board
 	Board *easy_sudoku = new Board();
@@ -92,7 +116,7 @@ int main() {
 	while (easy_sudoku->is_complete() == false) {
 		easy_sudoku->annotate_potential_entries();
 		easy_sudoku->remove_doubles_and_triples_by_sub_grid();
-		//easy_sudoku->find_unique_potentials();
+		easy_sudoku->find_unique_potentials();
 		std::cout << "Loops: " << ++loop_count_easy << " | Empty Cells: ";
 		std::cout << easy_sudoku->empty_cells << std::endl;
 		if (loop_count_easy > 15) {
@@ -103,7 +127,7 @@ int main() {
 	auto stop_easy = high_resolution_clock::now();
 	auto duration_easy = duration_cast<milliseconds>(stop_easy - start_easy);
 	std::cout << duration_easy.count() << "ms" << std::endl;
-	std::cout << "Board is correct: " << easy_sudoku->compare_boards(easy_sudoku->board_to_ints(), easy_test_answer) << std::endl;
+	std::cout << "Board is correct: " << easy_sudoku->is_legal() << std::endl;
 	easy_sudoku->print_board();
 
 	// Run solver on second easy board
@@ -117,7 +141,7 @@ int main() {
 	while (easy_sudoku2->is_complete() == false) {
 		easy_sudoku2->annotate_potential_entries();
 		easy_sudoku2->remove_doubles_and_triples_by_sub_grid();
-		//easy_sudoku2->find_unique_potentials();
+		easy_sudoku2->find_unique_potentials();
 		std::cout << "Loops: " << ++loop_count_easy2 << " | Empty Cells: ";
 		std::cout << easy_sudoku2->empty_cells << std::endl;
 		if (loop_count_easy2 > 15) {
@@ -128,7 +152,7 @@ int main() {
 	auto stop_easy2 = high_resolution_clock::now();
 	auto duration_easy2 = duration_cast<milliseconds>(stop_easy2 - start_easy2);
 	std::cout << duration_easy2.count() << "ms" << std::endl;
-	std::cout << "Board is correct: " << easy_sudoku2->compare_boards(easy_sudoku2->board_to_ints(), easy_test2_answer) << std::endl;
+	std::cout << "Board is correct: " << easy_sudoku2->is_legal() << std::endl;
 	easy_sudoku2->print_board();
 
 	// Run solver on medium board
@@ -152,7 +176,30 @@ int main() {
 	auto duration_med = duration_cast<milliseconds>(stop_med - start_med);
 	std::cout << duration_med.count() << "ms" << std::endl;
 	med_sudoku->print_board();
-	std::cout << "Board is correct: " << med_sudoku->compare_boards(test_board_medium, medium_test_answer) << std::endl;
+	std::cout << "Board is correct: " << med_sudoku->is_legal() << std::endl;
+
+	// Run solver on medium board
+	Board *hard_sudoku = new Board();
+	hard_sudoku->set_board(test_board_hard);
+	hard_sudoku->print_board();
+	int loop_count_hard = 0;
+
+	// run solver on mediam board
+	auto start_hard = high_resolution_clock::now();
+
+	while (hard_sudoku->is_complete() == false) {
+		hard_sudoku->annotate_potential_entries();
+		hard_sudoku->remove_doubles_and_triples_by_sub_grid();
+		hard_sudoku->find_unique_potentials();
+		std::cout << "Loops: " << ++loop_count_hard << " | Empty Cells: ";
+		std::cout << hard_sudoku->empty_cells << std::endl;
+	}
+
+	auto stop_hard = high_resolution_clock::now();
+	auto duration_hard = duration_cast<milliseconds>(stop_hard - start_hard);
+	std::cout << duration_hard.count() << "ms" << std::endl;
+	hard_sudoku->print_board();
+	std::cout << "Board is correct: " << hard_sudoku->is_legal() << std::endl;
 
 	delete easy_sudoku;
 	delete easy_sudoku2;
@@ -161,6 +208,7 @@ int main() {
 	delete easy_test2_answer;
 	delete test_board_medium;
 	delete medium_test_answer;
+	delete test_board_hard;
 	delete test_board_easy;
 	delete easy_test_answer;
 
