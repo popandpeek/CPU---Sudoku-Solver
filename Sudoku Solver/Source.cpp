@@ -143,7 +143,6 @@ int main() {
 	while (med_sudoku->is_complete() == false) {
 		med_sudoku->annotate_potential_entries();
 		med_sudoku->remove_doubles_and_triples_by_sub_grid();
-		med_sudoku->find_unique_potentials();
 		std::cout << "Loops: " << ++loop_count_med << " | Empty Cells: ";
 		std::cout << med_sudoku->empty_cells << std::endl;
 		if (loop_count_med > 10) {
@@ -151,20 +150,43 @@ int main() {
 		}
 	}
 
-	/*med_sudoku->find_unique_potentials();
+	med_sudoku->find_unique_potentials();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->annotate_potential_entries();
 	std::cout << med_sudoku->empty_cells << std::endl;
 	med_sudoku->remove_doubles_and_triples_by_sub_grid();
-	std::cout << med_sudoku->empty_cells << std::endl;*/
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->find_unique_potentials();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->annotate_potential_entries();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->remove_doubles_and_triples_by_sub_grid();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->find_unique_potentials();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->annotate_potential_entries();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->remove_doubles_and_triples_by_sub_grid();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->find_unique_potentials();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->annotate_potential_entries();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->find_unique_potentials();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->remove_doubles_and_triples_by_sub_grid();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->find_unique_potentials();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->annotate_potential_entries();
+	std::cout << med_sudoku->empty_cells << std::endl;
+
+	med_sudoku->print_board();
 
 	auto stop_med = high_resolution_clock::now();
 	auto duration_med = duration_cast<milliseconds>(stop_med - start_med);
 	std::cout << duration_med.count() << "ms" << std::endl;
 	std::cout << "Board is correct: " << med_sudoku->compare_boards(test_board_medium, medium_test_answer) << std::endl;
-	med_sudoku->print_board();
-	med_sudoku->print_cell(0);
-	med_sudoku->print_cell(2);
-	med_sudoku->print_cell(18);
-	med_sudoku->print_cell(20);
 
 	delete easy_sudoku;
 	delete easy_sudoku2;
