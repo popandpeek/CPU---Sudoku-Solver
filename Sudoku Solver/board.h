@@ -94,6 +94,8 @@ public:
 	// Function to return integer array of cell values
 	int* board_to_ints();
 
+	void is_legal();
+
 	// Function to compare integer arrays of values
 	bool compare_boards(int*, int*);
 
