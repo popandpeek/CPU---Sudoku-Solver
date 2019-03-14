@@ -45,12 +45,15 @@ public:
 	// Method to set the board according to passed integer array
 	// assumes the filled integer array is of size BOARD_SIZE contains only values between 1 and 9	
 	void set_board(int*);
+	
+	// Updates the potentials after a cell gets filled
+	void update_potentials(int, int);
 
 	// sets a cell
 	void set_cell(int, int, int);
 
 	// sets a cell using 1d coordinates
-	void set_cell(int _loc, int _val);
+	void set_cell(int, int);
 
 	// method for finding potential values for empty cells
 	void annotate_potential_entries();

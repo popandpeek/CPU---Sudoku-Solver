@@ -70,7 +70,7 @@ int main() {
 										 3, 0, 0, 0, 0, 0, 0, 6, 0,
 										 0, 2, 0, 0, 0, 5, 0, 0, 0 };
 
-	int* medium_test_answer = new int[81]{ 4, 6, 7, 9, 1, 8, 3, 2, 5,
+	int* medium_test_answer = new int[81]{  4, 6, 7, 9, 1, 8, 3, 2, 5,
 											8, 5, 2, 3, 7, 4, 6 ,9, 1, 
 											1, 9, 3, 2, 5, 6, 7, 8, 4,
 											9, 7, 4, 5, 2, 3, 8, 1, 6,
@@ -142,14 +142,30 @@ int main() {
 
 	while (med_sudoku->is_complete() == false) {
 		med_sudoku->annotate_potential_entries();
-		med_sudoku->remove_doubles_and_triples_by_sub_grid();
+		//med_sudoku->remove_doubles_and_triples_by_sub_grid();
 		std::cout << "Loops: " << ++loop_count_med << " | Empty Cells: ";
 		std::cout << med_sudoku->empty_cells << std::endl;
-		if (loop_count_med > 10) {
+		if (loop_count_med > 3) {
 			break;
 		}
 	}
 
+	med_sudoku->print_cell(18);
+	med_sudoku->print_cell(19);
+	med_sudoku->print_cell(20);
+	med_sudoku->print_cell(21);
+	med_sudoku->print_cell(22);
+	med_sudoku->print_cell(23);
+	med_sudoku->print_cell(24);
+	med_sudoku->print_cell(25);
+	med_sudoku->print_cell(26);
+	med_sudoku->print_board();
+	med_sudoku->find_unique_potentials();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	med_sudoku->annotate_potential_entries();
+	std::cout << med_sudoku->empty_cells << std::endl;
+	//med_sudoku->remove_doubles_and_triples_by_sub_grid();
+	//std::cout << med_sudoku->empty_cells << std::endl;
 	med_sudoku->find_unique_potentials();
 	std::cout << med_sudoku->empty_cells << std::endl;
 	med_sudoku->annotate_potential_entries();
@@ -160,14 +176,8 @@ int main() {
 	std::cout << med_sudoku->empty_cells << std::endl;
 	med_sudoku->annotate_potential_entries();
 	std::cout << med_sudoku->empty_cells << std::endl;
-	med_sudoku->remove_doubles_and_triples_by_sub_grid();
-	std::cout << med_sudoku->empty_cells << std::endl;
-	med_sudoku->find_unique_potentials();
-	std::cout << med_sudoku->empty_cells << std::endl;
-	med_sudoku->annotate_potential_entries();
-	std::cout << med_sudoku->empty_cells << std::endl;
-	med_sudoku->remove_doubles_and_triples_by_sub_grid();
-	std::cout << med_sudoku->empty_cells << std::endl;
+	//med_sudoku->remove_doubles_and_triples_by_sub_grid();
+	//std::cout << med_sudoku->empty_cells << std::endl;
 	med_sudoku->find_unique_potentials();
 	std::cout << med_sudoku->empty_cells << std::endl;
 	med_sudoku->annotate_potential_entries();

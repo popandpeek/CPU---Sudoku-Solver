@@ -8,7 +8,6 @@
 */
 
 #include "board.h"
-#include "EntryCheck.cpp"
 
 Board::Board() {
 	for (int i = 0; i < BOARD_SIZE; i++) {
@@ -48,6 +47,41 @@ void Board::set_board(int* filled) {
 	}
 }
 
+// Updates the potentials after a cell gets filled
+void Board::update_potentials(int _loc, int _val) {
+	if (board[_loc][0] == false) // dont do anything if cell is not filled
+		return;
+
+	int row = _loc / SUB_BOARD_SIZE;
+	for (int i = 0; i < SUB_BOARD_SIZE; i++) {
+		int row_ind = row * SUB_BOARD_SIZE + i;
+		if (row_ind != _loc) {
+			board[row_ind][_val] = false;
+		}
+	}
+
+	int col = _loc % SUB_BOARD_SIZE;
+	for (int i = 0; i < SUB_BOARD_SIZE; i++) {
+		int col_ind = col + (SUB_BOARD_SIZE * i);
+		if (col_ind != _loc) {
+			board[col_ind][_val] = false;
+		}
+	}
+
+	int sub_grid_x = row / SUB_BOARD_DIM; // 0, 1, or 2
+	int sub_grid_y = col / SUB_BOARD_DIM; // 0, 1, or 2
+	int grid_start = (sub_grid_x * SUB_BOARD_SIZE * SUB_BOARD_DIM) + (sub_grid_y * SUB_BOARD_DIM);
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			//		  start ind     rows of grid         col
+			int ind = grid_start + (i * SUB_BOARD_SIZE) + j;
+			if (ind != _loc) {
+				board[ind][_val] = false;
+			}
+		}
+	}
+}
+
 // sets a cell
 void Board::set_cell(int _row, int _col, int _val) {
 	int board_cell = _row + _col * SUB_BOARD_SIZE;
@@ -58,6 +92,7 @@ void Board::set_cell(int _row, int _col, int _val) {
 			board[board_cell][i] = false;
 		}
 	}
+	update_potentials(board_cell, _val);
 	is_legal();
 	--empty_cells;
 }
@@ -71,6 +106,7 @@ void Board::set_cell(int _loc, int _val) {
 			board[_loc][i] = false;
 		}
 	}
+	update_potentials(_loc, _val);
 	is_legal();
 	--empty_cells;
 }
@@ -78,6 +114,8 @@ void Board::set_cell(int _loc, int _val) {
 // method for reducing potential values for empty cells
 void Board::annotate_potential_entries() {
 	is_legal();
+
+	//print_board();
 	// std::cout << empty_cells << std::endl;
 	for (int row = 0; row < SUB_BOARD_SIZE; row++) {
 		// set to hold non-filled values in the row
@@ -101,23 +139,22 @@ void Board::annotate_potential_entries() {
 			for (int i = row * SUB_BOARD_SIZE; i < (row * SUB_BOARD_SIZE) + SUB_BOARD_SIZE; i++) {
 				if (board[i][0] == false) {
 					for (auto it = row_vals.begin(); it != row_vals.end(); ++it) {
-						is_legal();
 						board[i][*it] = false;
 						is_legal();
 					}
 
 					// check for single potential value and set if true
 					int count = 0;
+					int val = 0;
 					for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
 						if (board[i][j] == true) {
+							val = j;
 							++count;
 						}
 					}
 					if (count == 1) {
+						set_cell(i, val);
 						is_legal();
-						board[i][0] = true;
-						is_legal();
-						--empty_cells;
 					}
 				}
 			}
@@ -148,7 +185,6 @@ void Board::annotate_potential_entries() {
 				if (board[i][0] == false) {
 					for (auto it = col_vals.begin(); it != col_vals.end(); ++it) {
 						if (board[i][*it] == true) {
-							is_legal();
 							board[i][*it] = false;
 							is_legal();
 						}
@@ -156,16 +192,16 @@ void Board::annotate_potential_entries() {
 
 					// check for single potential value and set if true
 					int count = 0;
+					int val = 0;
 					for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
 						if (board[i][j] == true) {
+							val = j;
 							++count;
 						}
 					}
 					if (count == 1) {
+						set_cell(i, val);
 						is_legal();
-						board[i][0] = true;
-						is_legal();
-						--empty_cells;
 					}
 				}
 			}
@@ -196,7 +232,6 @@ void Board::annotate_potential_entries() {
 					if (board[loc][0] == false) {
 						for (auto it = grid_vals.begin(); it != grid_vals.end(); ++it) {
 							if (board[loc][*it] == true) {
-								is_legal();
 								board[loc][*it] = false;
 								is_legal();
 							}
@@ -204,13 +239,16 @@ void Board::annotate_potential_entries() {
 
 						// check for single potential value and set if true
 						int count = 0;
+						int val = 0;
 						for (int i = 1; i < SUB_BOARD_SIZE + 1; i++) {
 							if (board[loc][i] == true) {
+								val = i;
 								++count;
 							}
 						}
 						if (count == 1) {
 							board[loc][0] = true;
+							set_cell(loc, val);
 							is_legal();
 							--empty_cells;
 						}
@@ -453,8 +491,15 @@ void Board::find_unique_cell_potential(int _loc) {
 	// pool all row cell potentials besides the selected cell
 	for (int i = 0; i < SUB_BOARD_SIZE; i++) {
 		int row_ind = row * SUB_BOARD_SIZE + i;
+		if (_loc == 24) {
+			print_cell(row_ind);
+			/*for (auto it = cell_set.begin(); it != cell_set.end(); ++it) {
+				print_cell()
+			}*/
+		}
 		if (row_ind != _loc) {
 			std::set<int> cell_set = get_potential_set(row_ind);
+
 			pooled_potentials.insert(cell_set.begin(), cell_set.end());
 		}
 	}
@@ -471,7 +516,6 @@ void Board::find_unique_cell_potential(int _loc) {
 		// only matters if we found a unique potential
 		if (diff.size() == 1) {
 			auto it = diff.begin();
-			is_legal();
 			set_cell(_loc, *it);
 			is_legal();
 			// cell is set now so we're done
@@ -503,7 +547,6 @@ void Board::find_unique_cell_potential(int _loc) {
 		// only matters if we found a unique potential
 		if (diff.size() == 1) {
 			auto it = diff.begin();
-			is_legal();
 			set_cell(_loc, *it);
 			is_legal();
 			// cell is set now so we're done
@@ -539,7 +582,6 @@ void Board::find_unique_cell_potential(int _loc) {
 		// only matters if we found a unique potential
 		if (diff.size() == 1) {
 			auto it = diff.begin();
-			is_legal();
 			set_cell(_loc, *it);
 			is_legal();
 			// cell is set now so we're done
@@ -709,6 +751,7 @@ void Board::is_legal() {
 
 		if (int_board[i] != 0 && !is_legal_entry(int_board, SUB_BOARD_SIZE, row, col, int_board[i], i)) {
 			print_board();
+			print_cell(i);
 			throw;
 		}
 
