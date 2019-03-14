@@ -250,7 +250,6 @@ void Board::annotate_potential_entries() {
 							board[loc][0] = true;
 							set_cell(loc, val);
 							is_legal();
-							--empty_cells;
 						}
 					}
 				}
@@ -491,12 +490,6 @@ void Board::find_unique_cell_potential(int _loc) {
 	// pool all row cell potentials besides the selected cell
 	for (int i = 0; i < SUB_BOARD_SIZE; i++) {
 		int row_ind = row * SUB_BOARD_SIZE + i;
-		if (_loc == 24) {
-			print_cell(row_ind);
-			/*for (auto it = cell_set.begin(); it != cell_set.end(); ++it) {
-				print_cell()
-			}*/
-		}
 		if (row_ind != _loc) {
 			std::set<int> cell_set = get_potential_set(row_ind);
 
