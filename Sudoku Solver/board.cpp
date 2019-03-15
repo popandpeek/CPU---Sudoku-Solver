@@ -351,7 +351,6 @@ void Board::remove_doubles_and_triples_by_sub_grid() {
 					std::set<int>cell_3 = get_potential_set(row * SUB_BOARD_SIZE + grid_start + 2);
 
 					// check for triples
-					// *****NEED TO CHECK FOR INCLUDE NOT EXACT MATCH*****
 					if (cell_1.size() == 3 && cell_2.size() == 3 && cell_3.size() == 3) {
 						if (cell_1 == cell_2 && cell_1 == cell_3) { // found a row triple
 

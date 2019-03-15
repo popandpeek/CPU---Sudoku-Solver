@@ -102,13 +102,35 @@ int main() {
 	//										3, 8, 5, 4, 9, 7, 1, 6, 2,
 	//										7, 2, 1, 6, 3, 5, 9, 4, 8 };
 
+	// http://www.ams.org/notices/200904/rtx090400460p.pdf
+	int* test_board_diabolical = new int[81]{ 0, 9, 0, 7, 0, 0, 8, 6, 0,
+											  0, 3, 1, 0, 0, 5, 0, 2, 0,
+											  8, 0, 6, 0, 0, 0, 0, 0, 0,
+											  0, 0, 7, 0, 5, 0, 0, 0, 6,
+											  0, 0, 0, 3, 0, 7, 0, 0, 0,
+											  5, 0, 0, 0, 1, 0, 7, 0, 0,
+											  0, 0, 0, 0, 0, 0, 1, 0, 9, 
+											  0, 2, 0, 6, 0, 0, 3, 5, 0,
+											  0, 5, 4, 0, 0, 8, 0, 7, 0 };
 
+	int* diabolical_test_answer = new int[81]{ 2, 9, 5, 7, 4, 3, 8, 6, 1,
+											   4, 3, 1, 8, 6, 5, 9, 2, 7,
+											   8, 7, 6, 1, 9, 2, 5, 4, 3, 
+											   3, 8, 7, 4, 5, 9, 2, 1, 6, 
+											   6, 1, 2, 3, 8, 7, 4, 9, 5, 
+											   5, 4, 9, 2, 1, 6, 7, 3, 8, 
+											   7, 6, 3, 5, 2, 4, 1, 8, 9, 
+											   9, 2, 8, 6, 7, 1, 3, 5, 4, 
+											   1, 5, 4, 9, 3, 8, 6, 7, 2 };
 
 	// Instantiate and set game board
 	Board *easy_sudoku = new Board();
 	easy_sudoku->set_board(test_board_easy);
 	easy_sudoku->print_board();
 	int loop_count_easy = 0;
+
+	std::cout << "Loops: " << loop_count_easy << " | Empty Cells: ";
+	std::cout << easy_sudoku->empty_cells << std::endl;
 
 	// Run solver on easy board
 	auto start_easy = high_resolution_clock::now();
@@ -136,6 +158,9 @@ int main() {
 	easy_sudoku2->print_board();
 	int loop_count_easy2 = 0;
 
+	std::cout << "Loops: " << loop_count_easy2 << " | Empty Cells: ";
+	std::cout << easy_sudoku2->empty_cells << std::endl;
+
 	auto start_easy2 = high_resolution_clock::now();
 
 	while (easy_sudoku2->is_complete() == false) {
@@ -161,7 +186,9 @@ int main() {
 	med_sudoku->print_board();
 	int loop_count_med = 0;
 
-	// run solver on mediam board
+	std::cout << "Loops: " << loop_count_med << " | Empty Cells: ";
+	std::cout << med_sudoku->empty_cells << std::endl;
+
 	auto start_med = high_resolution_clock::now();
 
 	while (med_sudoku->is_complete() == false) {
@@ -178,13 +205,15 @@ int main() {
 	med_sudoku->print_board();
 	std::cout << "Board is correct: " << med_sudoku->is_legal() << std::endl;
 
-	// Run solver on medium board
+	// Run solver on hard board
 	Board *hard_sudoku = new Board();
 	hard_sudoku->set_board(test_board_hard);
 	hard_sudoku->print_board();
 	int loop_count_hard = 0;
 
-	// run solver on mediam board
+	std::cout << "Loops: " << loop_count_hard << " | Empty Cells: ";
+	std::cout << hard_sudoku->empty_cells << std::endl;
+
 	auto start_hard = high_resolution_clock::now();
 
 	while (hard_sudoku->is_complete() == false) {
@@ -201,9 +230,43 @@ int main() {
 	hard_sudoku->print_board();
 	std::cout << "Board is correct: " << hard_sudoku->is_legal() << std::endl;
 
+	// Run solver on diabolical board
+	Board *diabolical_sudoku = new Board();
+	diabolical_sudoku->set_board(test_board_diabolical);
+	diabolical_sudoku->print_board();
+	int loop_count_diabolical = 0;
+
+	std::cout << "Loops: " << loop_count_diabolical << " | Empty Cells: ";
+	std::cout << diabolical_sudoku->empty_cells << std::endl;
+
+	auto start_diabolical = high_resolution_clock::now();
+
+	while (diabolical_sudoku->is_complete() == false) {
+		diabolical_sudoku->annotate_potential_entries();
+		diabolical_sudoku->remove_doubles_and_triples_by_sub_grid();
+		diabolical_sudoku->find_unique_potentials();
+		std::cout << "Loops: " << ++loop_count_diabolical << " | Empty Cells: ";
+		std::cout << diabolical_sudoku->empty_cells << std::endl;
+		if (loop_count_diabolical > 15) {
+			break;
+		}
+	}
+
+	auto stop_diabolical = high_resolution_clock::now();
+	auto duration_diabolical = duration_cast<milliseconds>(stop_diabolical - start_diabolical);
+	std::cout << duration_diabolical.count() << "ms" << std::endl;
+	diabolical_sudoku->print_board();
+	std::cout << "Board is correct: " << diabolical_sudoku->is_legal() << std::endl;
+
+	diabolical_sudoku->print_cell(30);
+	diabolical_sudoku->print_cell(32);
+	diabolical_sudoku->print_cell(33);
+
 	delete easy_sudoku;
 	delete easy_sudoku2;
 	delete med_sudoku;
+	delete hard_sudoku;
+	delete diabolical_sudoku;
 	delete test_board_easy2;
 	delete easy_test2_answer;
 	delete test_board_medium;
@@ -211,6 +274,9 @@ int main() {
 	delete test_board_hard;
 	delete test_board_easy;
 	delete easy_test_answer;
+	delete test_board_hard;
+	delete test_board_diabolical;
+	delete diabolical_test_answer;
 
 	return 0;
 }
