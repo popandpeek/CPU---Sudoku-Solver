@@ -230,43 +230,43 @@ int main() {
 	hard_sudoku->print_board();
 	std::cout << "Board is correct: " << hard_sudoku->is_legal() << std::endl;
 
-	// Run solver on diabolical board
-	Board *diabolical_sudoku = new Board();
-	diabolical_sudoku->set_board(test_board_diabolical);
-	diabolical_sudoku->print_board();
-	int loop_count_diabolical = 0;
+	//// Run solver on diabolical board
+	//Board *diabolical_sudoku = new Board();
+	//diabolical_sudoku->set_board(test_board_diabolical);
+	//diabolical_sudoku->print_board();
+	//int loop_count_diabolical = 0;
 
-	std::cout << "Loops: " << loop_count_diabolical << " | Empty Cells: ";
-	std::cout << diabolical_sudoku->empty_cells << std::endl;
+	//std::cout << "Loops: " << loop_count_diabolical << " | Empty Cells: ";
+	//std::cout << diabolical_sudoku->empty_cells << std::endl;
 
-	auto start_diabolical = high_resolution_clock::now();
+	//auto start_diabolical = high_resolution_clock::now();
 
-	while (diabolical_sudoku->is_complete() == false) {
-		diabolical_sudoku->annotate_potential_entries();
-		diabolical_sudoku->remove_doubles_and_triples_by_sub_grid();
-		diabolical_sudoku->find_unique_potentials();
-		std::cout << "Loops: " << ++loop_count_diabolical << " | Empty Cells: ";
-		std::cout << diabolical_sudoku->empty_cells << std::endl;
-		if (loop_count_diabolical > 15) {
-			break;
-		}
-	}
+	//while (diabolical_sudoku->is_complete() == false) {
+	//	diabolical_sudoku->annotate_potential_entries();
+	//	diabolical_sudoku->remove_doubles_and_triples_by_sub_grid();
+	//	diabolical_sudoku->find_unique_potentials();
+	//	std::cout << "Loops: " << ++loop_count_diabolical << " | Empty Cells: ";
+	//	std::cout << diabolical_sudoku->empty_cells << std::endl;
+	//	if (loop_count_diabolical > 15) {
+	//		break;
+	//	}
+	//}
 
-	auto stop_diabolical = high_resolution_clock::now();
-	auto duration_diabolical = duration_cast<milliseconds>(stop_diabolical - start_diabolical);
-	std::cout << duration_diabolical.count() << "ms" << std::endl;
-	diabolical_sudoku->print_board();
-	std::cout << "Board is correct: " << diabolical_sudoku->is_legal() << std::endl;
+	//auto stop_diabolical = high_resolution_clock::now();
+	//auto duration_diabolical = duration_cast<milliseconds>(stop_diabolical - start_diabolical);
+	//std::cout << duration_diabolical.count() << "ms" << std::endl;
+	//diabolical_sudoku->print_board();
+	//std::cout << "Board is correct: " << diabolical_sudoku->is_legal() << std::endl;
 
-	diabolical_sudoku->print_cell(30);
-	diabolical_sudoku->print_cell(32);
-	diabolical_sudoku->print_cell(33);
+	//diabolical_sudoku->print_cell(30);
+	//diabolical_sudoku->print_cell(32);
+	//diabolical_sudoku->print_cell(33);
 
 	delete easy_sudoku;
 	delete easy_sudoku2;
 	delete med_sudoku;
 	delete hard_sudoku;
-	delete diabolical_sudoku;
+	//delete diabolical_sudoku;
 	delete test_board_easy2;
 	delete easy_test2_answer;
 	delete test_board_medium;
