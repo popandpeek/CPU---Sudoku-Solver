@@ -29,15 +29,38 @@ Board::~Board() {
 	delete board;
 }
 
+// Primary solving functions
+// returns true if a solution is found
+bool Board::solve_board() {
+	int prev_cells = 0;
+	while(true) {
+		this->annotate_potential_entries();
+		this->remove_doubles_and_triples_by_sub_grid();
+		this->find_unique_potentials();
+
+		if (this->empty_cells == 0) { // board has been solved
+			return true;
+		}
+		else if (this->empty_cells == prev_cells) { // need to start guessing since no progress is being made
+			break;
+		}
+		prev_cells = this->empty_cells;
+	}
+
+	return this->guess_board();
+}
+
 // Functions to set the board according to passed integer array
 // Marks an empty cells potential values as all true
 void Board::set_board(int* filled) {
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		if (filled[i] != 0) {
 			board[i][0] = true;
+			for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
+				board[i][j] = false;
+			}
 			board[i][filled[i]] = true;
 		}
-
 		else {
 			for (int j = 1; j < SUB_BOARD_SIZE + 1; j++) {
 				board[i][j] = true;
@@ -85,7 +108,6 @@ void Board::update_potentials(int _loc, int _val) {
 // sets a cell
 void Board::set_cell(int _row, int _col, int _val) {
 	int board_cell = _row + _col * SUB_BOARD_SIZE;
-	is_legal();
 	board[board_cell][0] = true;
 	for (int i = 1; i < SUB_BOARD_SIZE + 1; i++) {
 		if (board[board_cell][i] == true && i != _val) {
@@ -93,13 +115,11 @@ void Board::set_cell(int _row, int _col, int _val) {
 		}
 	}
 	update_potentials(board_cell, _val);
-	is_legal();
 	--empty_cells;
 }
 
 // sets a cell using 1d coordinates
 void Board::set_cell(int _loc, int _val) {
-	is_legal();
 	board[_loc][0] = true;
 	for (int i = 1; i < SUB_BOARD_SIZE + 1; i++) {
 		if (board[_loc][i] == true && i != _val) {
@@ -107,7 +127,6 @@ void Board::set_cell(int _loc, int _val) {
 		}
 	}
 	update_potentials(_loc, _val);
-	is_legal();
 	--empty_cells;
 }
 
@@ -212,7 +231,7 @@ void Board::annotate_potential_entries() {
 	for (int grid_x = 0; grid_x < SUB_BOARD_DIM; grid_x++) {
 		for (int grid_y = 0; grid_y < SUB_BOARD_DIM; grid_y++) {
 			std::set<int> grid_vals;
-			int grid_start = grid_x * 9 * 3 + grid_y * 3;
+			int grid_start = grid_x * SUB_BOARD_SIZE * SUB_BOARD_DIM + grid_y * SUB_BOARD_DIM;
 			for (int row = 0; row < SUB_BOARD_DIM; row++) {
 				for (int loc = grid_start + row * SUB_BOARD_SIZE; loc < (grid_start + row * SUB_BOARD_SIZE) + SUB_BOARD_DIM; loc++) {
 					if (board[loc][0] == true) {
@@ -582,6 +601,62 @@ void Board::find_unique_cell_potential(int _loc) {
 	}
 }
 
+int* Board::create_copy(int*board) {
+	int* copy = new int[BOARD_SIZE];
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		copy[i] = board[i];
+	}
+
+	return copy;
+}
+
+int Board::find_next_empty_cell(int* board) {
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		if (board[i] == 0)
+			return i;
+	}
+	return -1;
+}
+
+bool Board::guess_board() {
+
+	int* start_state_board = board_to_ints();
+	std::stack<int*> board_stack;
+	board_stack.push(start_state_board);
+
+	while (!board_stack.empty()) {
+		// Get the current state of board we will work on
+		int* curr_board = board_stack.top();
+		board_stack.pop();
+
+		int next_cell = find_next_empty_cell(curr_board);
+		if (next_cell == -1) { // board is full. check if it is legal
+			if (is_legal_1d(curr_board)) { // found an answer
+				this->set_board(curr_board);
+				this->empty_cells = 0;
+				return true;
+			}
+			else { // not the right answer so we move on
+				continue;
+			}
+		}
+
+		std::set<int> potential_values = get_potential_set(next_cell);
+
+		for (auto it = potential_values.begin(); it != potential_values.end(); it++) {
+			int* next_board = create_copy(curr_board);
+			next_board[next_cell] = *it;
+
+			if (is_legal_1d(next_board)) {
+				board_stack.push(next_board);
+			}
+		}
+
+	}
+
+	return false;
+}
+
 // Prints out the sudoku game board
 // Assumes N is either 4, 9 or 16 but can be extended to add more sizes
 void Board::print_board() {
@@ -654,10 +729,10 @@ int* Board::board_to_ints() {
 }
 
 
-bool row_check(const int* _board, int _board_root, int _row, int _entry, int loc) {
+bool Board::row_check(const int* _board, int _board_root, int _row, int _entry, int loc) {
 	for (int i = _row * _board_root; i < _row * _board_root + _board_root; i++) {
 		if (i != loc && _board[i] == _entry) {
-			std::cout << "row check failed at index: " << i << " value: " << _entry << " row: " << _row  << std::endl;
+			//std::cout << "row check failed at index: " << i << " value: " << _entry << " row: " << _row  << std::endl;
 			return false;
 		}
 	}
@@ -665,10 +740,10 @@ bool row_check(const int* _board, int _board_root, int _row, int _entry, int loc
 	return true;
 }
 
-bool column_check(const int* _board, int _board_root, int _col, int _entry, int loc) {
+bool Board::column_check(const int* _board, int _board_root, int _col, int _entry, int loc) {
 	for (int i = _col; i < _board_root * _board_root - (_board_root - _col); i += _board_root) {
 		if (i != loc && _board[i] == _entry) {
-			std::cout << "col check failed at index: " << i << " value: " << _entry << " col: " << _col << std::endl;
+			//std::cout << "col check failed at index: " << i << " value: " << _entry << " col: " << _col << std::endl;
 			return false;
 		}
 	}
@@ -676,7 +751,7 @@ bool column_check(const int* _board, int _board_root, int _col, int _entry, int 
 	return true;
 }
 
-bool grid_check(const int* _board, int _board_root, int _start_row, int _start_col, int _entry, int loc) {
+bool Board::grid_check(const int* _board, int _board_root, int _start_row, int _start_col, int _entry, int loc) {
 	int sub_grid_x = _start_row / SUB_BOARD_DIM; // 0, 1, or 2
 	int sub_grid_y = _start_col / SUB_BOARD_DIM; // 0, 1, or 2
 	int grid_start = (sub_grid_x * SUB_BOARD_SIZE * SUB_BOARD_DIM) + (sub_grid_y * SUB_BOARD_DIM);
@@ -685,7 +760,7 @@ bool grid_check(const int* _board, int _board_root, int _start_row, int _start_c
 			//		  start ind     rows of grid         col
 			int ind = grid_start + (i * SUB_BOARD_SIZE) + j;
 			if (ind != loc && _board[ind] == _entry) {
-				std::cout << "grid check failed at index: " << ind << " value: " << _entry << " row, col: " << _start_row << ", " << _start_col << std::endl;
+				//std::cout << "grid check failed at index: " << ind << " value: " << _entry << " row, col: " << _start_row << ", " << _start_col << std::endl;
 				return false;
 			}
 		}
@@ -694,15 +769,13 @@ bool grid_check(const int* _board, int _board_root, int _start_row, int _start_c
 	return true;
 }
 
-bool is_legal_entry(const int* _board, int _board_root, int _row, int _col, int _entry, int loc) {
+bool Board::is_legal_entry(const int* _board, int _board_root, int _row, int _col, int _entry, int loc) {
 	return row_check(_board, _board_root, _row, _entry, loc) &&
 		column_check(_board, _board_root, _col, _entry, loc) &&
 		grid_check(_board, _board_root, _row, _col, _entry, loc);
 }
 
-
-
-void print_boarder(int *board) {
+void Board::print_board_1d(int *board) {
 
 	char* border = new char[26]{ "|-------+-------+-------|" };
 
@@ -735,6 +808,19 @@ void print_boarder(int *board) {
 	std::cout << std::endl;
 }
 
+bool Board::is_legal_1d(int *board) {
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		int row = i / SUB_BOARD_SIZE;
+		int col = i % SUB_BOARD_SIZE;
+
+		if (board[i] != 0 && !is_legal_entry(board, SUB_BOARD_SIZE, row, col, board[i], i)) {
+			//print_board_1d(board);
+			return false;
+		}
+	}
+	return true;
+}
+
 bool Board::is_legal() {
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		int* int_board = board_to_ints();
@@ -749,7 +835,6 @@ bool Board::is_legal() {
 	}
 	return true;
 }
-
 
 // Function to compare two integer arrays
 bool Board::compare_boards(int* _one, int* _two) {

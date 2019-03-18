@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <set>
+#include <stack>
 
 #pragma once
 
@@ -90,12 +91,34 @@ public:
 	// If it contains a unique potential, the cell gets filled
 	void find_unique_cell_potential(int);
 
+	int * create_copy(int * board);
+
+	int find_next_empty_cell(int * board);
+
+	// Function to solve board 
+	bool solve_board();
+
+	// Takes the current board state and create guesses to fill in the rest of the empty cells
+	bool guess_board();
+
 	// Prints out the passed in sudoku game board
 	// Assumes N is either 4, 9 or 16 but can be extended to add more sizes
 	void print_board();
 
 	// Function to return integer array of cell values
 	int* board_to_ints();
+
+	bool row_check(const int * _board, int _board_root, int _row, int _entry, int loc);
+
+	bool column_check(const int * _board, int _board_root, int _col, int _entry, int loc);
+
+	bool grid_check(const int * _board, int _board_root, int _start_row, int _start_col, int _entry, int loc);
+
+	bool is_legal_entry(const int * _board, int _board_root, int _row, int _col, int _entry, int loc);
+
+	void print_board_1d(int * board);
+
+	bool is_legal_1d(int * board);
 
 	bool is_legal();
 

@@ -92,16 +92,6 @@ int main() {
 										 0, 0, 0, 1, 0, 0, 2, 0, 6,
 										 0, 0, 0, 3, 8, 2, 0, 0, 0 };
 
-	//int* hard_test_answer = new int[81]{    4, 6, 7, 9, 1, 8, 3, 2, 5,
-	//										8, 5, 2, 3, 7, 4, 6 ,9, 1,
-	//										1, 9, 3, 2, 5, 6, 7, 8, 4,
-	//										9, 7, 4, 5, 2, 3, 8, 1, 6,
-	//										2, 1, 8, 7, 6, 9, 4, 5, 3,
-	//										5, 3, 6, 8, 4, 1, 2, 7, 9,
-	//										6, 4, 9, 1, 8, 2, 5, 3, 7,
-	//										3, 8, 5, 4, 9, 7, 1, 6, 2,
-	//										7, 2, 1, 6, 3, 5, 9, 4, 8 };
-
 	// http://www.ams.org/notices/200904/rtx090400460p.pdf
 	int* test_board_diabolical = new int[81]{ 0, 9, 0, 7, 0, 0, 8, 6, 0,
 											  0, 3, 1, 0, 0, 5, 0, 2, 0,
@@ -126,157 +116,113 @@ int main() {
 	// Instantiate and set game board
 	Board *easy_sudoku = new Board();
 	easy_sudoku->set_board(test_board_easy);
-	easy_sudoku->print_board();
-	int loop_count_easy = 0;
 
-	std::cout << "Loops: " << loop_count_easy << " | Empty Cells: ";
-	std::cout << easy_sudoku->empty_cells << std::endl;
+	std::cout << std::endl << "Now testing easy board #1:" << std::endl;
+	std::cout << "Board start state: " << std::endl;
+	easy_sudoku->print_board();
 
 	// Run solver on easy board
 	auto start_easy = high_resolution_clock::now();
 
-	while (easy_sudoku->is_complete() == false) {
-		easy_sudoku->annotate_potential_entries();
-		easy_sudoku->remove_doubles_and_triples_by_sub_grid();
-		easy_sudoku->find_unique_potentials();
-		std::cout << "Loops: " << ++loop_count_easy << " | Empty Cells: ";
-		std::cout << easy_sudoku->empty_cells << std::endl;
-		if (loop_count_easy > 15) {
-			break;
-		}
-	}
+	bool solved = easy_sudoku->solve_board(); // solve board
 
 	auto stop_easy = high_resolution_clock::now();
 	auto duration_easy = duration_cast<milliseconds>(stop_easy - start_easy);
-	std::cout << duration_easy.count() << "ms" << std::endl;
-	std::cout << "Board is correct: " << easy_sudoku->is_legal() << std::endl;
+	std::cout << "Runtime: " << duration_easy.count() << "ms" << std::endl;
+	std::cout << "Board end state: " << std::endl;
 	easy_sudoku->print_board();
+	std::cout << "Board is correct: " << solved << std::endl;
 
 	// Run solver on second easy board
 	Board *easy_sudoku2 = new Board();
 	easy_sudoku2->set_board(test_board_easy2);
-	easy_sudoku2->print_board();
-	int loop_count_easy2 = 0;
 
-	std::cout << "Loops: " << loop_count_easy2 << " | Empty Cells: ";
-	std::cout << easy_sudoku2->empty_cells << std::endl;
+	std::cout << std::endl << "Now testing easy board #2:" << std::endl;
+	std::cout << "Board start state: " << std::endl;
+	easy_sudoku2->print_board();
 
 	auto start_easy2 = high_resolution_clock::now();
 
-	while (easy_sudoku2->is_complete() == false) {
-		easy_sudoku2->annotate_potential_entries();
-		easy_sudoku2->remove_doubles_and_triples_by_sub_grid();
-		easy_sudoku2->find_unique_potentials();
-		std::cout << "Loops: " << ++loop_count_easy2 << " | Empty Cells: ";
-		std::cout << easy_sudoku2->empty_cells << std::endl;
-		if (loop_count_easy2 > 15) {
-			break;
-		}
-	}
+	solved = easy_sudoku2->solve_board(); // solve board
 
 	auto stop_easy2 = high_resolution_clock::now();
 	auto duration_easy2 = duration_cast<milliseconds>(stop_easy2 - start_easy2);
-	std::cout << duration_easy2.count() << "ms" << std::endl;
-	std::cout << "Board is correct: " << easy_sudoku2->is_legal() << std::endl;
+	std::cout << "Runtime: " << duration_easy2.count() << "ms" << std::endl;
+	std::cout << "Board end state: " << std::endl;
 	easy_sudoku2->print_board();
+	std::cout << "Board is correct: " << solved << std::endl;
 
 	// Run solver on medium board
 	Board *med_sudoku = new Board();
 	med_sudoku->set_board(test_board_medium);
-	med_sudoku->print_board();
-	int loop_count_med = 0;
 
-	std::cout << "Loops: " << loop_count_med << " | Empty Cells: ";
-	std::cout << med_sudoku->empty_cells << std::endl;
+	std::cout << std::endl << "Now testing medium board:" << std::endl;
+	std::cout << "Board start state: " << std::endl;
+	med_sudoku->print_board();
 
 	auto start_med = high_resolution_clock::now();
 
-	while (med_sudoku->is_complete() == false) {
-		med_sudoku->annotate_potential_entries();
-		med_sudoku->remove_doubles_and_triples_by_sub_grid();
-		med_sudoku->find_unique_potentials();
-		std::cout << "Loops: " << ++loop_count_med << " | Empty Cells: ";
-		std::cout << med_sudoku->empty_cells << std::endl;
-	}
+	solved = med_sudoku->solve_board(); // solve board
 
 	auto stop_med = high_resolution_clock::now();
 	auto duration_med = duration_cast<milliseconds>(stop_med - start_med);
-	std::cout << duration_med.count() << "ms" << std::endl;
+	std::cout << "Runtime: " << duration_med.count() << "ms" << std::endl;
+	std::cout << "Board end state: " << std::endl;
 	med_sudoku->print_board();
-	std::cout << "Board is correct: " << med_sudoku->is_legal() << std::endl;
+	std::cout << "Board is correct: " << solved << std::endl;
 
 	// Run solver on hard board
 	Board *hard_sudoku = new Board();
 	hard_sudoku->set_board(test_board_hard);
-	hard_sudoku->print_board();
-	int loop_count_hard = 0;
 
-	std::cout << "Loops: " << loop_count_hard << " | Empty Cells: ";
-	std::cout << hard_sudoku->empty_cells << std::endl;
+	std::cout << std::endl << "Now testing hard board:" << std::endl;
+	std::cout << "Board start state: " << std::endl;
+	hard_sudoku->print_board();
 
 	auto start_hard = high_resolution_clock::now();
 
-	while (hard_sudoku->is_complete() == false) {
-		hard_sudoku->annotate_potential_entries();
-		hard_sudoku->remove_doubles_and_triples_by_sub_grid();
-		hard_sudoku->find_unique_potentials();
-		std::cout << "Loops: " << ++loop_count_hard << " | Empty Cells: ";
-		std::cout << hard_sudoku->empty_cells << std::endl;
-	}
+	solved = hard_sudoku->solve_board(); // solve board
 
 	auto stop_hard = high_resolution_clock::now();
 	auto duration_hard = duration_cast<milliseconds>(stop_hard - start_hard);
-	std::cout << duration_hard.count() << "ms" << std::endl;
+	std::cout << "Runtime: " << duration_hard.count() << "ms" << std::endl;
+	std::cout << "Board end state: " << std::endl;
 	hard_sudoku->print_board();
-	std::cout << "Board is correct: " << hard_sudoku->is_legal() << std::endl;
+	std::cout << "Board is correct: " << solved << std::endl;
 
-	//// Run solver on diabolical board
-	//Board *diabolical_sudoku = new Board();
-	//diabolical_sudoku->set_board(test_board_diabolical);
-	//diabolical_sudoku->print_board();
-	//int loop_count_diabolical = 0;
+	// Run solver on diabolical board
+	Board *diabolical_sudoku = new Board();
+	diabolical_sudoku->set_board(test_board_diabolical);
 
-	//std::cout << "Loops: " << loop_count_diabolical << " | Empty Cells: ";
-	//std::cout << diabolical_sudoku->empty_cells << std::endl;
+	std::cout << std::endl << "Now testing diabolical board:" << std::endl;
+	std::cout << "Board start state: " << std::endl;
+	diabolical_sudoku->print_board();
 
-	//auto start_diabolical = high_resolution_clock::now();
+	auto start_diabolical = high_resolution_clock::now();
 
-	//while (diabolical_sudoku->is_complete() == false) {
-	//	diabolical_sudoku->annotate_potential_entries();
-	//	diabolical_sudoku->remove_doubles_and_triples_by_sub_grid();
-	//	diabolical_sudoku->find_unique_potentials();
-	//	std::cout << "Loops: " << ++loop_count_diabolical << " | Empty Cells: ";
-	//	std::cout << diabolical_sudoku->empty_cells << std::endl;
-	//	if (loop_count_diabolical > 15) {
-	//		break;
-	//	}
-	//}
+	solved = diabolical_sudoku->solve_board(); // solve board
 
-	//auto stop_diabolical = high_resolution_clock::now();
-	//auto duration_diabolical = duration_cast<milliseconds>(stop_diabolical - start_diabolical);
-	//std::cout << duration_diabolical.count() << "ms" << std::endl;
-	//diabolical_sudoku->print_board();
-	//std::cout << "Board is correct: " << diabolical_sudoku->is_legal() << std::endl;
+	auto stop_diabolical = high_resolution_clock::now();
+	auto duration_diabolical = duration_cast<milliseconds>(stop_diabolical - start_diabolical);
+	std::cout << "Runtime: "<< duration_diabolical.count() << " ms" << std::endl;
+	std::cout << "Board end state: " << std::endl;
+	diabolical_sudoku->print_board();
+	std::cout << "Board is correct: " << solved << std::endl;
 
-	//diabolical_sudoku->print_cell(30);
-	//diabolical_sudoku->print_cell(32);
-	//diabolical_sudoku->print_cell(33);
-
-	delete easy_sudoku;
-	delete easy_sudoku2;
-	delete med_sudoku;
-	delete hard_sudoku;
+	//delete easy_sudoku;
+	//delete easy_sudoku2;
+	//delete med_sudoku;
+	//delete hard_sudoku;
 	//delete diabolical_sudoku;
-	delete test_board_easy2;
-	delete easy_test2_answer;
-	delete test_board_medium;
-	delete medium_test_answer;
-	delete test_board_hard;
-	delete test_board_easy;
-	delete easy_test_answer;
-	delete test_board_hard;
-	delete test_board_diabolical;
-	delete diabolical_test_answer;
+	//delete test_board_easy2;
+	//delete easy_test2_answer;
+	//delete test_board_medium;
+	//delete medium_test_answer;
+	//delete test_board_hard;
+	//delete test_board_easy;
+	//delete test_board_hard;
+	//delete test_board_diabolical;
+	//delete diabolical_test_answer;
 
 	return 0;
 }
